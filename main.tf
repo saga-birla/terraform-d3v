@@ -1,3 +1,13 @@
+data "google_compute_address" "reserved_ips" {
+  for_each = toset(var.static_ip_names)
+  name     = each.value
+  region   = var.region
+}
+
+locals {
+  reserved_static_ips = [for ip in data.google_compute_address.reserved_ips : ip.address if ip.status == "RESERVED"]
+}
+
 locals { // dynamic possiblities in tfvars
   instance_networks = [
     [
